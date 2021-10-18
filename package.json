@@ -1,0 +1,16 @@
+{
+  "name": "bsc-stream-chapel",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ VijayKumarKTG/bsc-stream-chapel",
+    "create-local": "graph create --node http://localhost:8020/ VijayKumarKTG/bsc-stream-chapel",
+    "remove-local": "graph remove --node http://localhost:8020/ VijayKumarKTG/bsc-stream-chapel",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 VijayKumarKTG/bsc-stream-chapel"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.22.3",
+    "@graphprotocol/graph-ts": "0.22.1"
+  }
+}
