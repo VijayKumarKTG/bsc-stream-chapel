@@ -1,5 +1,6 @@
-import { store } from '@graphprotocol/graph-ts';
+import { log, store } from '@graphprotocol/graph-ts';
 import {
+  Sablier,
   CancelStream,
   CreateStream,
   WithdrawFromStream,
@@ -12,18 +13,6 @@ export function handleCancelStream(event: CancelStream): void {
     store.remove('Stream', stream.id);
   }
   return;
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.nextStreamId(...)
-  // - contract.getStream(...)
-  // - contract.deltaOf(...)
-  // - contract.balanceOf(...)
-  // - contract.createStream(...)
-  // - contract.withdrawFromStream(...)
-  // - contract.cancelStream(...)
 }
 
 export function handleCreateStream(event: CreateStream): void {
@@ -44,9 +33,11 @@ export function handleCreateStream(event: CreateStream): void {
 export function handleWithdrawFromStream(event: WithdrawFromStream): void {
   let stream = Stream.load(event.params.streamId.toString());
   if (stream) {
-    stream.deposit = event.params.amount;
-    stream.recipient = event.params.recipient;
-    stream.save();
+    let sablier = Sablier.bind(event.address);
+    let result = sablier.try_getStream(event.params.streamId);
+    if (result.reverted) {
+      log.info('Stream', [stream.id]);
+      store.remove('Stream', stream.id);
+    }
   }
-  return;
 }
