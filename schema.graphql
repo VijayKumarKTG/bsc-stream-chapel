@@ -10,4 +10,5 @@ type Stream @entity {
   ratePerSecond: BigInt!
   remainingBalance: BigInt!
   isEntity: Boolean!
+  status: String!
 }

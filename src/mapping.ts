@@ -10,7 +10,8 @@ import { Stream } from '../generated/schema';
 export function handleCancelStream(event: CancelStream): void {
   let stream = Stream.load(event.params.streamId.toString());
   if (stream) {
-    store.remove('Stream', stream.id);
+    stream.status = 'cancelled';
+    stream.save();
   }
   return;
 }
@@ -27,6 +28,7 @@ export function handleCreateStream(event: CreateStream): void {
   stream.startTime = event.params.startTime;
   stream.sender = event.params.sender;
   stream.tokenAddress = event.params.tokenAddress;
+  stream.status = 'active';
   stream.save();
 }
 
@@ -36,8 +38,8 @@ export function handleWithdrawFromStream(event: WithdrawFromStream): void {
     let sablier = Sablier.bind(event.address);
     let result = sablier.try_getStream(event.params.streamId);
     if (result.reverted) {
-      log.info('Stream', [stream.id]);
-      store.remove('Stream', stream.id);
+      stream.status = 'withdrew';
+      stream.save();
     }
   }
 }
