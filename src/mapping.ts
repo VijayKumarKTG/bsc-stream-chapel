@@ -1,3 +1,4 @@
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import {
   Sablier,
   CancelStream,
@@ -10,6 +11,10 @@ export function handleCancelStream(event: CancelStream): void {
   let stream = Stream.load(event.params.streamId.toString());
   if (stream) {
     stream.status = 'cancelled';
+    let percent = new BigDecimal(new BigInt(100));
+    stream.progress = percent.times(
+      event.params.recipientBalance.divDecimal(new BigDecimal(stream.deposit))
+    );
     stream.save();
   }
   return;
@@ -38,7 +43,11 @@ export function handleWithdrawFromStream(event: WithdrawFromStream): void {
     let sablier = Sablier.bind(event.address);
     let result = sablier.try_getStream(event.params.streamId);
     if (result.reverted) {
-      stream.status = 'withdrew';
+      stream.status = 'withdrawn';
+      let percent = new BigDecimal(new BigInt(100));
+      stream.progress = percent.times(
+        event.params.amount.divDecimal(new BigDecimal(stream.deposit))
+      );
       stream.save();
     }
   }

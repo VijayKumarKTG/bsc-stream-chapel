@@ -12,4 +12,5 @@ type Stream @entity {
   isEntity: Boolean!
   status: String!
   tx: String!
+  progress: BigDecimal
 }
