@@ -1,4 +1,3 @@
-import { log, store } from '@graphprotocol/graph-ts';
 import {
   Sablier,
   CancelStream,
@@ -28,6 +27,7 @@ export function handleCreateStream(event: CreateStream): void {
   stream.startTime = event.params.startTime;
   stream.sender = event.params.sender;
   stream.tokenAddress = event.params.tokenAddress;
+  stream.tx = event.transaction.hash.toHexString();
   stream.status = 'active';
   stream.save();
 }
