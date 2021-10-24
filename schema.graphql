@@ -7,10 +7,8 @@ type Stream @entity {
   startTime: BigInt!
   stopTime: BigInt!
   deposit: BigInt!
-  ratePerSecond: BigInt!
-  remainingBalance: BigInt!
   isEntity: Boolean!
   status: String!
   tx: String!
-  progress: BigDecimal
+  amount: BigInt
 }

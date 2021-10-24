@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
 import {
   Sablier,
   CancelStream,
@@ -11,10 +11,7 @@ export function handleCancelStream(event: CancelStream): void {
   let stream = Stream.load(event.params.streamId.toString());
   if (stream) {
     stream.status = 'cancelled';
-    let percent = new BigDecimal(new BigInt(100));
-    stream.progress = percent.times(
-      event.params.recipientBalance.divDecimal(new BigDecimal(stream.deposit))
-    );
+    stream.amount = event.params.recipientBalance;
     stream.save();
   }
   return;
@@ -34,6 +31,7 @@ export function handleCreateStream(event: CreateStream): void {
   stream.tokenAddress = event.params.tokenAddress;
   stream.tx = event.transaction.hash.toHexString();
   stream.status = 'active';
+  stream.amount = new BigInt(0);
   stream.save();
 }
 
@@ -44,11 +42,10 @@ export function handleWithdrawFromStream(event: WithdrawFromStream): void {
     let result = sablier.try_getStream(event.params.streamId);
     if (result.reverted) {
       stream.status = 'withdrawn';
-      let percent = new BigDecimal(new BigInt(100));
-      stream.progress = percent.times(
-        event.params.amount.divDecimal(new BigDecimal(stream.deposit))
-      );
+      stream.amount = stream.amount.plus(event.params.amount);
       stream.save();
+    } else if (stream.amount) {
+      stream.amount = stream.amount.plus(event.params.amount);
     }
   }
 }
