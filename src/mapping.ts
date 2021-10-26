@@ -42,10 +42,11 @@ export function handleWithdrawFromStream(event: WithdrawFromStream): void {
     let result = sablier.try_getStream(event.params.streamId);
     if (result.reverted) {
       stream.status = 'withdrawn';
-      stream.amount = stream.amount.plus(event.params.amount);
+      stream.amount = event.params.amount.plus(stream.amount);
       stream.save();
-    } else if (stream.amount) {
-      stream.amount = stream.amount.plus(event.params.amount);
+    } else {
+      stream.amount = event.params.amount.plus(stream.amount);
+      stream.save();
     }
   }
 }
